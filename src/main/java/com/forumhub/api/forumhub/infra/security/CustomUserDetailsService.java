@@ -17,8 +17,12 @@ import java.util.Optional;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+    private final UsuarioRepository usuarioRepository;
+
     @Autowired
-    public UsuarioRepository usuarioRepository;
+    public CustomUserDetailsService(UsuarioRepository usuarioRepository) {
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) {
@@ -26,7 +30,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (usuario.isPresent()) {
             return new User(
                     usuario.get().getEmail(),
-                    new BCryptPasswordEncoder().encode(usuario.get().getSenha()), // TODO REMOVE
+                    usuario.get().getSenha(),
                     Collections.emptyList() // No authorities roles are being used.
             );
         }

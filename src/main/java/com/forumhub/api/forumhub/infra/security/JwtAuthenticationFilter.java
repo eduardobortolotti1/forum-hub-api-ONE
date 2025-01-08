@@ -24,15 +24,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Value("${api.security.token.secret}")
     private String SECRET_KEY;
 
-    private TokenService tokenService;
+    private final TokenService tokenService;
+    private final CustomUserDetailsService userDetailsService;
 
     @Autowired
-    public JwtAuthenticationFilter(TokenService tokenService) {
+    public JwtAuthenticationFilter(TokenService tokenService, CustomUserDetailsService userDetailsService) {
         this.tokenService = tokenService;
+        this.userDetailsService = userDetailsService;
     }
-
-    @Autowired
-    CustomUserDetailsService userDetailsService;
 
     @Override
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
