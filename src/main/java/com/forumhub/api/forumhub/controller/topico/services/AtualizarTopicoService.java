@@ -1,6 +1,8 @@
 package com.forumhub.api.forumhub.controller.topico.services;
 
 import com.forumhub.api.forumhub.domain.topico.*;
+import com.forumhub.api.forumhub.infra.security.OwnerValidators.TopicoOwnerValidation;
+import com.forumhub.api.forumhub.infra.service.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,10 +12,14 @@ import java.util.Optional;
 @Service
 public class AtualizarTopicoService {
     private final TopicoRepository repository;
+    private final TopicoOwnerValidation ownerValidator;
+    private final TokenService tokenService;
 
     @Autowired
-    public AtualizarTopicoService(TopicoRepository repository) {
+    public AtualizarTopicoService(TopicoRepository repository, TopicoOwnerValidation validator, TokenService tokenService) {
         this.repository = repository;
+        this.ownerValidator = validator;
+        this.tokenService = new TokenService();
     }
 
     public TopicoDetalhamentoDTO atualizar(Long id, @Valid TopicoAtualizarDTO dados) {
@@ -22,6 +28,8 @@ public class AtualizarTopicoService {
         if (topicoOriginal.isEmpty()) {
             throw new TopicoNaoEncontradoException();
         }
+
+        ownerValidator.validate(topicoOriginal.get());
 
         topicoOriginal.get().setTitulo(dados.titulo());
         topicoOriginal.get().setMensagem(dados.mensagem());

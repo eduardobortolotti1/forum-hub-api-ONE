@@ -10,7 +10,4 @@ import java.util.Optional;
 public interface TopicoRepository extends JpaRepository<Topico, Long> {
 
     Optional<List<Topico>> findByTituloAndMensagem(String titulo, String mensagem);
-
-
-    Page<Topico> findAll(Pageable pageable);
 }
