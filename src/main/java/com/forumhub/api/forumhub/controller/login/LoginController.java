@@ -1,6 +1,9 @@
 package com.forumhub.api.forumhub.controller.login;
 
+import com.forumhub.api.forumhub.domain.usuario.Usuario;
+import com.forumhub.api.forumhub.domain.usuario.UsuarioRepository;
 import com.forumhub.api.forumhub.infra.service.TokenService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -13,18 +16,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/login")
 public class LoginController {
-    @Autowired
-    AuthenticationManager authenticationManager;
+    private final AuthenticationManager authenticationManager;
+    private final TokenService tokenService;
+    private final UsuarioRepository usuarioRepository;
 
     @Autowired
-    TokenService tokenService;
+    public LoginController(AuthenticationManager authenticationManager, TokenService tokenService, UsuarioRepository usuarioRepository) {
+        this.authenticationManager = authenticationManager;
+        this.tokenService = tokenService;
+        this.usuarioRepository = usuarioRepository;
+    }
 
     @PostMapping
-    public ResponseEntity<TokenJWT> logar(@Valid LoginRequestDTO loginRequestDTO) {
+    public ResponseEntity<TokenJWT> logar(@Valid LoginRequestDTO loginRequestDTO, HttpServletRequest httpServletRequest) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequestDTO.email(), loginRequestDTO.senha())
         );
-        TokenJWT tokenJWT = new TokenJWT(tokenService.gerarToken(loginRequestDTO.email()));
+
+        Usuario usuario = usuarioRepository.findByEmail(loginRequestDTO.email()).get();
+        TokenJWT tokenJWT = new TokenJWT(tokenService.gerarToken(loginRequestDTO.email(), usuario.getId()));
         return ResponseEntity.ok(tokenJWT);
     }
 }
