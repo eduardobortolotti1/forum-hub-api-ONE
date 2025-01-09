@@ -13,9 +13,6 @@ public record TopicoCadastroDTO(
         String mensagem,
 
         @NotNull
-        Long idAutor,
-
-        @NotNull
         Long idCurso
 ) {
 }

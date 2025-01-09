@@ -1,6 +1,7 @@
 package com.forumhub.api.forumhub.domain.topico.validacoes.cadastro;
 
 import com.forumhub.api.forumhub.domain.topico.Topico;
+import com.forumhub.api.forumhub.domain.topico.TopicoCadastroDTO;
 import com.forumhub.api.forumhub.domain.topico.TopicoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,10 +15,10 @@ public class ValidarTopicoUnico implements ValidarTopicoCadastrado {
         this.topicRepository = topicRepository;
     }
     
-    public void validar(Topico topico) {
-        var duplicadoSearch = topicRepository.findByTituloAndMensagem(topico.getTitulo(), topico.getMensagem());
+    public void validar(TopicoCadastroDTO topico) {
+        var duplicadoSearch = topicRepository.findByTituloAndMensagem(topico.titulo(), topico.mensagem());
         if (duplicadoSearch.isPresent() && !duplicadoSearch.get().isEmpty()) {
-            throw new TopicoDuplicadoException("Já existe um tópico com o mesmo título e mensagem. e utilizar um título ou mensagem diferentes.");
+            throw new TopicoDuplicadoException("Já existe um tópico com o mesmo título e mensagem. Tente utilizar um título ou mensagem diferentes.");
         }
     }
 }

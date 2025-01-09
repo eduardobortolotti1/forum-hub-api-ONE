@@ -5,11 +5,13 @@ import com.forumhub.api.forumhub.domain.curso.CursoNaoEncontradoException;
 import com.forumhub.api.forumhub.domain.curso.CursoRepository;
 import com.forumhub.api.forumhub.domain.topico.TopicoCadastroDTO;
 import com.forumhub.api.forumhub.domain.topico.Topico;
+import com.forumhub.api.forumhub.domain.topico.TopicoRepository;
 import com.forumhub.api.forumhub.domain.topico.TopicoStatus;
 import com.forumhub.api.forumhub.domain.topico.validacoes.cadastro.ValidarTopicoCadastrado;
 import com.forumhub.api.forumhub.domain.usuario.Usuario;
 import com.forumhub.api.forumhub.domain.usuario.UsuarioNaoEncontradoException;
 import com.forumhub.api.forumhub.domain.usuario.UsuarioRepository;
+import com.forumhub.api.forumhub.infra.security.SecurityContexHolderAccess;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,32 +22,29 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-public class CadastrarTopicoService {
+public class CadastrarTopicoService implements SecurityContexHolderAccess {
+    private final UsuarioRepository usuarioRepository;
+    private final CursoRepository cursoRepository;
+    private final List<ValidarTopicoCadastrado> validadores;
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
-
-    @Autowired
-    private CursoRepository cursoRepository;
-
-    @Autowired
-    private List<ValidarTopicoCadastrado> validadores;
+    public CadastrarTopicoService(UsuarioRepository usuarioRepository, CursoRepository cursoRepository, List<ValidarTopicoCadastrado> validadores) {
+        this.usuarioRepository = usuarioRepository;
+        this.cursoRepository = cursoRepository;
+        this.validadores = validadores;
+    }
 
     public Topico validar(@Valid TopicoCadastroDTO dados) {
-        Optional<Usuario> userSearched = usuarioRepository.findById(dados.idAutor());
         Optional<Curso> cursoSearched = cursoRepository.findById(dados.idCurso());
+        Usuario usuarioSearched = usuarioRepository.findById(authContextUserId).get();
 
-        if (userSearched.isEmpty()) {
-            throw new UsuarioNaoEncontradoException();
-        }
         if (cursoSearched.isEmpty()) {
             throw new CursoNaoEncontradoException();
         }
 
-        Topico topicoCriado = new Topico(null, dados.titulo(), dados.mensagem(), LocalDateTime.now(), TopicoStatus.NAO_RESPONDIDO, userSearched.get(), cursoSearched.get());
+        // Responsável pela validação. Joga exception apropriada caso alguma falhe.
+        validadores.forEach(v -> v.validar(dados));
 
-        validadores.forEach(v -> v.validar(topicoCriado));
-
-        return topicoCriado;
+        return new Topico(null, dados.titulo(), dados.mensagem(), LocalDateTime.now(), TopicoStatus.NAO_RESPONDIDO, usuarioSearched, cursoSearched.get());
     }
 }
