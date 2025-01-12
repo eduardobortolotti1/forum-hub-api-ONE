@@ -22,19 +22,17 @@ public class Resposta {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @NotBlank
     String mensagem;
 
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
     @JoinColumn(name = "topico")
     Topico topico;
 
-    @PastOrPresent
     @Column(name = "data_criacao")
     LocalDateTime dataCriacao;
 
     @ManyToOne(fetch = jakarta.persistence.FetchType.LAZY)
-    @JoinColumn(name = "autor")
+    @JoinColumn(name = "autor", referencedColumnName = "id")
     Usuario autor;
 
     Boolean solucao;

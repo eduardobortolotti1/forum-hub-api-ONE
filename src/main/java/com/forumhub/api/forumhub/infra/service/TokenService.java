@@ -71,8 +71,7 @@ public class TokenService {
             verifier.verify(token); // This will throw an exception if the token is invalid
             return true;
         } catch (JWTVerificationException e) {
-            // Handle token verification failure (e.g., expired, invalid, etc.)
-            return false;
+            throw e;
         }
     }
 }

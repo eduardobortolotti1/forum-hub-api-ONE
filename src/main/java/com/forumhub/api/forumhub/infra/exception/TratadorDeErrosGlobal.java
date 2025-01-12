@@ -1,11 +1,11 @@
 package com.forumhub.api.forumhub.infra.exception;
 
+import com.forumhub.api.forumhub.domain.resposta.RespostaNaoEncontradaException;
 import com.forumhub.api.forumhub.controller.topico.EmailJaExistenteException;
 import com.forumhub.api.forumhub.domain.curso.CursoNaoEncontradoException;
 import com.forumhub.api.forumhub.domain.topico.TopicoNaoEncontradoException;
 import com.forumhub.api.forumhub.domain.topico.validacoes.cadastro.TopicoDuplicadoException;
 import com.forumhub.api.forumhub.domain.usuario.UsuarioNaoEncontradoException;
-import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
@@ -43,4 +43,19 @@ public class TratadorDeErrosGlobal {
     public ResponseEntity<AccessDeniedException> tratarErroAccessDeniedException(AccessDeniedException e) {
         return ResponseEntity.status(HttpStatusCode.valueOf(403)).body(e);
     }
+
+    @ExceptionHandler(RespostaNaoEncontradaException.class)
+    public ResponseEntity<RespostaNaoEncontradaException> RespostaNaoEncontradaException(RespostaNaoEncontradaException e) {
+        return ResponseEntity.notFound().build();
+    }
+//
+//    @ExceptionHandler(JWTVerificationException.class)
+//    public ResponseEntity<JWTVerificationException> tratarErroJWTVerificationException(JWTVerificationException e) {
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e);
+//    }
+//
+//    @ExceptionHandler(TokenExpiredException.class)
+//    public ResponseEntity<TokenExpiredException> tratarErroTokenExpiredException(TokenExpiredException e) {
+//        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(e);
+//    }
 }
