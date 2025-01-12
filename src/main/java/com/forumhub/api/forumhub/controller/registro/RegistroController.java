@@ -1,7 +1,8 @@
 package com.forumhub.api.forumhub.controller.registro;
 
-import com.forumhub.api.forumhub.domain.usuario.RegistroDTO;
-import com.forumhub.api.forumhub.domain.usuario.RegistroService;
+import com.forumhub.api.forumhub.domain.registro.RegistroDTO;
+import com.forumhub.api.forumhub.domain.registro.RegistroService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,7 @@ public class RegistroController {
     }
 
     @PostMapping
-    public ResponseEntity<Void> registrar(RegistroDTO registroDTO) {
+    public ResponseEntity<Void> registrar(@Valid RegistroDTO registroDTO) {
         registroService.registrarUsuario(registroDTO);
 
         return ResponseEntity.ok().build();

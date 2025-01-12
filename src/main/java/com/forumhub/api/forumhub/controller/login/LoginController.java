@@ -1,7 +1,9 @@
 package com.forumhub.api.forumhub.controller.login;
 
+import com.forumhub.api.forumhub.domain.login.LoginRequestDTO;
 import com.forumhub.api.forumhub.domain.usuario.Usuario;
 import com.forumhub.api.forumhub.domain.usuario.UsuarioRepository;
+import com.forumhub.api.forumhub.infra.TokenJWT;
 import com.forumhub.api.forumhub.infra.service.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
