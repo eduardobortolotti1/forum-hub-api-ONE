@@ -1,15 +1,14 @@
 package com.forumhub.api.forumhub.controller.resposta;
 
-import com.forumhub.api.forumhub.domain.resposta.RespostaDTO;
-import com.forumhub.api.forumhub.domain.resposta.RespostaDetalhamentoDTO;
-import com.forumhub.api.forumhub.domain.resposta.RespostaNaoEncontradaException;
-import com.forumhub.api.forumhub.domain.resposta.RespostaRepository;
+import com.forumhub.api.forumhub.domain.resposta.*;
+import com.forumhub.api.forumhub.domain.topico.TopicoDetalhamentoDTO;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -29,11 +28,19 @@ public class RespostaController {
         return ResponseEntity.ok(respostaService.buscarRespostas(id));
     }
 
-    @PostMapping("{id}")
-    public ResponseEntity<RespostaDetalhamentoDTO> cadastrarResposta(@PathVariable Long id, @Valid RespostaDTO resposta) {
-        RespostaDetalhamentoDTO respostaCadastrada =  respostaService.cadastrarResposta(resposta, id);
+    @PostMapping
+    public ResponseEntity<RespostaDetalhamentoDTO> cadastrarResposta(@Valid RespostaDTO resposta, UriComponentsBuilder uriBuilder) {
+        Resposta respostaCadastrada =  respostaService.cadastrarResposta(resposta);
+        URI location = URI.create("/resposta/" + respostaCadastrada.getId());
 
-        return ResponseEntity.ok(respostaCadastrada);
+
+        return ResponseEntity.created(location).body(new RespostaDetalhamentoDTO(respostaCadastrada));
+    }
+    @PatchMapping("{id}")
+    public ResponseEntity<RespostaDetalhamentoDTO> atualizarResposta(@PathVariable Long id, @Valid RespostaAtualizarDTO resposta) {
+        RespostaDetalhamentoDTO respostaAtualizada = respostaService.atualizarResposta(resposta, id);
+
+        return ResponseEntity.ok(respostaAtualizada);
     }
 
     @DeleteMapping("{id}")

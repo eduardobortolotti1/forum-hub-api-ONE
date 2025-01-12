@@ -8,6 +8,7 @@ import com.forumhub.api.forumhub.domain.usuario.Usuario;
 import com.forumhub.api.forumhub.domain.usuario.UsuarioRepository;
 import com.forumhub.api.forumhub.infra.security.OwnerValidators.RespostaOwnerValidator;
 import com.forumhub.api.forumhub.infra.security.SecurityContexHolderAccess;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,9 +40,9 @@ public class RespostaService implements SecurityContexHolderAccess {
         return respostaRepository.findAllByTopicoId(topicoId);
     }
 
-    public RespostaDetalhamentoDTO cadastrarResposta(RespostaDTO respostaDTO, long topicoId) {
+    public Resposta cadastrarResposta(RespostaDTO respostaDTO) {
         //Checks if the original Topic exists
-        Optional<Topico> topicoOrigem = topicoRepository.findById(topicoId);
+        Optional<Topico> topicoOrigem = topicoRepository.findById(respostaDTO.idTopico());
         Usuario respostaAutor = usuarioRepository.findById(authContextUserId).get();
         if (topicoOrigem.isEmpty()) {
             throw new TopicoNaoEncontradoException();
@@ -49,13 +50,7 @@ public class RespostaService implements SecurityContexHolderAccess {
         //Saves new Resposta
         Resposta resposta = new Resposta(null, respostaDTO.mensagem(), topicoOrigem.get(), LocalDateTime.now(), respostaAutor, false);
         respostaRepository.save(resposta);
-        //Returns DTO
-        return new RespostaDetalhamentoDTO(
-                respostaDTO.mensagem(),
-                resposta.getDataCriacao(),
-                resposta.getAutor().getNome(),
-                resposta.getAutor().getId(),
-                false);
+        return resposta;
     }
 
     public void deletarResposta(Long idResposta) {
@@ -66,5 +61,17 @@ public class RespostaService implements SecurityContexHolderAccess {
         //Checking if logged user is owner and proper author of the Resposta
         validator.validate(resposta.get());
         respostaRepository.deleteById(idResposta);
+    }
+
+    public RespostaDetalhamentoDTO atualizarResposta(@Valid RespostaAtualizarDTO resposta, Long idResposta) {
+        Optional<Resposta> r = respostaRepository.findById(idResposta);
+        if (r.isEmpty()) {
+            throw new RespostaNaoEncontradaException();
+        }
+        //Checking if logged user is owner and proper author of the Resposta
+        validator.validate(r.get());
+        Resposta respostaAtualizada = new Resposta(null, resposta.mensagem(), r.get().getTopico(), r.get().getDataCriacao(), r.get().getAutor(), r.get().getSolucao());
+        respostaRepository.save(respostaAtualizada);
+        return new RespostaDetalhamentoDTO(respostaAtualizada);
     }
 }

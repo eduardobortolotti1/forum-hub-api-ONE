@@ -13,13 +13,11 @@ import java.util.Optional;
 public class AtualizarTopicoService {
     private final TopicoRepository repository;
     private final TopicoOwnerValidation ownerValidator;
-    private final TokenService tokenService;
 
     @Autowired
-    public AtualizarTopicoService(TopicoRepository repository, TopicoOwnerValidation validator, TokenService tokenService) {
+    public AtualizarTopicoService(TopicoRepository repository, TopicoOwnerValidation validator) {
         this.repository = repository;
         this.ownerValidator = validator;
-        this.tokenService = new TokenService();
     }
 
     public TopicoDetalhamentoDTO atualizar(Long id, @Valid TopicoAtualizarDTO dados) {
