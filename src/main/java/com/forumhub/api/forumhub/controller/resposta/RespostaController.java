@@ -43,6 +43,14 @@ public class RespostaController {
         return ResponseEntity.ok(respostaAtualizada);
     }
 
+    @PatchMapping("{id}/solucao")
+    public ResponseEntity<Void> marcarRespostaComoSolucao(@PathVariable long id, boolean isSolucao) {
+        //Podem haver múltiplas soluções.
+        //Não será possível desmarcar uma opção como solução.
+        respostaService.marcarRespostaComoSolucao(id, true);
+        return ResponseEntity.noContent().build();
+    }
+
     @DeleteMapping("{id}")
     public ResponseEntity<Void> deletarResposta(@PathVariable Long id) {
         respostaService.deletarResposta(id);

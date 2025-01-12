@@ -4,6 +4,7 @@ import com.forumhub.api.forumhub.domain.resposta.*;
 import com.forumhub.api.forumhub.domain.topico.Topico;
 import com.forumhub.api.forumhub.domain.topico.TopicoNaoEncontradoException;
 import com.forumhub.api.forumhub.domain.topico.TopicoRepository;
+import com.forumhub.api.forumhub.domain.topico.TopicoStatus;
 import com.forumhub.api.forumhub.domain.usuario.Usuario;
 import com.forumhub.api.forumhub.domain.usuario.UsuarioRepository;
 import com.forumhub.api.forumhub.infra.security.OwnerValidators.RespostaOwnerValidator;
@@ -47,9 +48,16 @@ public class RespostaService implements SecurityContexHolderAccess {
         if (topicoOrigem.isEmpty()) {
             throw new TopicoNaoEncontradoException();
         }
+
+        //Checando se o tópico está como "não respondido" e alterando seu status.
+        if (topicoOrigem.get().getStatus().equals(TopicoStatus.NAO_RESPONDIDO)) {
+            topicoOrigem.get().setStatus(TopicoStatus.RESPONDIDO);
+        }
+
         //Saves new Resposta
         Resposta resposta = new Resposta(null, respostaDTO.mensagem(), topicoOrigem.get(), LocalDateTime.now(), respostaAutor, false);
         respostaRepository.save(resposta);
+        topicoRepository.save(topicoOrigem.get());
         return resposta;
     }
 
@@ -73,5 +81,20 @@ public class RespostaService implements SecurityContexHolderAccess {
         Resposta respostaAtualizada = new Resposta(null, resposta.mensagem(), r.get().getTopico(), r.get().getDataCriacao(), r.get().getAutor(), r.get().getSolucao());
         respostaRepository.save(respostaAtualizada);
         return new RespostaDetalhamentoDTO(respostaAtualizada);
+    }
+
+    public void marcarRespostaComoSolucao(long idResposta, boolean isSolucao) {
+        Optional<Resposta> r = respostaRepository.findById(idResposta);
+        if (r.isEmpty()) {
+            throw new RespostaNaoEncontradaException();
+        }
+        //Checking if logged user is owner and proper author of the Resposta
+        validator.validate(r.get());
+        //Marcando resposta como solução
+        r.get().setSolucao(isSolucao);
+        //Alterando status do tópico para resposta encontrada
+        r.get().getTopico().setStatus(TopicoStatus.RESPOSTA_ENCONTRADA);
+        respostaRepository.save(r.get());
+        topicoRepository.save(r.get().getTopico());
     }
 }

@@ -35,6 +35,7 @@ public class Topico {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
+    @Setter
     private TopicoStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
