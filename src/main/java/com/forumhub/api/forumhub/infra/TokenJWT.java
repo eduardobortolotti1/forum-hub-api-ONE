@@ -1,4 +1,4 @@
-package com.forumhub.api.forumhub.controller.login;
+package com.forumhub.api.forumhub.infra;
 
 public record TokenJWT(
         String token

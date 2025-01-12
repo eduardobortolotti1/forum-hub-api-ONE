@@ -1,4 +1,4 @@
-package com.forumhub.api.forumhub.controller.topico;
+package com.forumhub.api.forumhub.domain.registro;
 
 public class EmailJaExistenteException extends RuntimeException {
     public EmailJaExistenteException() {

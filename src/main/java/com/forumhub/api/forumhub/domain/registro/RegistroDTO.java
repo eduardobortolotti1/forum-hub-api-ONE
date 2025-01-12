@@ -1,4 +1,4 @@
-package com.forumhub.api.forumhub.domain.usuario;
+package com.forumhub.api.forumhub.domain.registro;
 
 
 import jakarta.validation.constraints.Email;
@@ -15,7 +15,6 @@ public record RegistroDTO(
         @Email
         @Size(max = 100, message = "O email não pode ter mais que 100 caracteres")
         String email,
-
 
         @Pattern(regexp = ".*[A-Z].*", message = "A senha deve conter pelo menos 1 letra maiúscula!")
         @Range(min = 8, max = 150, message = "A senha deve ter entre 8 e 50 caracteres!")
