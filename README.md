@@ -48,12 +48,12 @@ Certifique-se de ter instalados:
 
 1. **Clonar o repositório**
    ```bash
-   git clone https://github.com/seu-usuario/forumhub-api.git
-   cd forumhub-api
+   git clone https://github.com/eduardobortolotti1/forum-hub-api-ONE
+   cd forum-hub-api-ONE
 
 2. **Configurar as Variáveis de Ambiente**
 
-### Configurações do Banco de Dados (H2)
+### Configurações do Banco de Dados MySQL (application.properties)
 
 ```bash
    spring.datasource.url=jdbc:mysql://localhost/forum-hub-api
