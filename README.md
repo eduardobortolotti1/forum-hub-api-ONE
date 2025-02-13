@@ -31,8 +31,7 @@ segurança das operações.
 
 ## Deploy
 
-Você pode executar este projeto localmente ou implantá-lo em um servidor de sua preferência. Para desenvolvimento e
-testes, recomenda-se utilizar o perfil de desenvolvimento com o banco H2.
+Você pode executar este projeto localmente ou implantá-lo em um servidor de sua preferência.
 
 ## Instalação
 
